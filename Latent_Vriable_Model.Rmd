@@ -95,16 +95,21 @@ ggpairs(as.data.frame(Pokemon_x_scaled))
 Apply latent variable method described in this work book. Do you find anything that you did not find before?
 
 ```{r}
-#
-#
+pca_result <- prcomp(Pokemon_x_scaled, center = TRUE, scale. = TRUE)
+
+# Plot the variance explained by each principal component
+plot(pca_result, type = "l", main = "Scree Plot")
+
+# Biplot of the first two principal components
+biplot(pca_result, main = "PCA Biplot")
+print(pca_result$rotation)
+
 ```
 
 Comment of the result:
 
 ~~~
-Please write your answer in full sentences.
-
-
+The PCA loadings reveal that PC1 likely represents overall Pokémon strength, capturing general combat effectiveness. PC2 differentiates Pokémon based on a trade-off between defense and speed, suggesting a distinction between tankier versus faster Pokémon. PC3 contrasts special defense capabilities with physical strength, indicating a specialization in combat style. PC4, PC5, and PC6 further illustrate nuances in Pokémon's battle strategies, such as the balance between bulky and balanced attackers, preference for special attacks over speed, and a defensive versus offensive orientation, respectively. These components highlight the multifaceted nature of Pokémon abilities and their strategic roles in battles.
 ~~~
 
 
@@ -114,18 +119,26 @@ I also found evolution information
 Pokemon_evo<-fread("Pokemon_evo.csv")
 ```
 
-
 ```{r}
-#
-#
+all_evo_names <- unlist(Pokemon_evo)
+Pokemon$Evolution_Stage <- ifelse(Pokemon$Name %in% Pokemon_evo$Stage_1, 1,
+                                  ifelse(Pokemon$Name %in% Pokemon_evo$Stage_2, 2,
+                                         ifelse(Pokemon$Name %in% Pokemon_evo$Stage_3, 3, 0)))
+Pokemon_full <- cbind(Pokemon_x_scaled, Evolution_Stage = Pokemon$Evolution_Stage)
+pca_full_result <- prcomp(Pokemon_full, scale. = TRUE)
+summary(pca_full_result)
+
+# visualize variance explained by the principal components
+plot(pca_full_result, type = "lines")
+biplot(pca_full_result, cex = 0.700)
+```
+
 ```
 
 Comment of the result:
 
 ~~~
-Please write your answer in full sentences.
-
-
+The PCA findings reveal that approximately 70% of the dataset's variance is accounted for by the initial three components, with the foremost component being particularly notable. Notably, the evolution stage is significantly represented in the second component, indicating that besides the individual attributes, the stage of evolution is a vital factor contributing to the dataset's overall diversity. This is further validated by the biplot, which illustrates how the evolution stage contributes to distinguishing between the Pokemon.
 ~~~
 
 ## Additional Material
